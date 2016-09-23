@@ -1,6 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-from lists.models import Item
+from lists.models import Item,List
 import unittest
 from django.test import TestCase, LiveServerTestCase
 
@@ -72,17 +72,27 @@ class NewVisitorTest(LiveServerTestCase):
 		self.fail('Finish test')
 
 
-class ItemModelTest(TestCase):
+class ListAndItemModelsTest(TestCase):
 	def test_saving_and_retrieving_items(self):
+		list_ = List()
+		list_.save()
+
 		first_item = Item()
+		first_item.list = list_
 		first_item.text = 'The first (ever) list item'
 		first_item.save()
 		second_item = Item()
+		first_item.list = list_
 		second_item.text = 'Item the second'
 		second_item.save()
-		saved_items = Item.objects.all()
+		saved_list = List.objects.first()
+		self.assertEqual(saved_list, list_)
+
+		saved_items = Item.objec1ts.all()
 		self.assertEqual(saved_items.count(), 2)
 		first_saved_item = saved_items[0]
 		second_saved_item = saved_items[1]
 		self.assertEqual(first_saved_item.text, 'The first (ever) list item')
+		self.assertEqual(first_saved_item.list, list_)
 		self.assertEqual(second_saved_item.text, 'Item the second')
+		self.assertEqual(second_saved_item.list, list_)
